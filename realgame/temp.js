@@ -1,6 +1,17 @@
-var now = new Date();
+var dict = {};
+dict["roror"] = 1000;
+dict.abc = 956;
+console.log(dict);
 
-var then = now + 60;
+console.log(new Date());
+var tdate = new Date();
+// tdate = JSON.stringify(tdate);
+tdate = tdate.getTime().toString();
 
-console.log(now);
-console.log(then);
+tdate+='.json'
+console.log(tdate);
+
+const Fs = require('fs-extra')
+ 
+Fs.ensureFile(tdate+'.json')
+

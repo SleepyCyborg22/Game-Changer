@@ -4,6 +4,7 @@ const express = require('express');
 const socketio = require("socket.io");
 const readline = require("readline-sync");
 const prompt = require('prompt-sync')({sigint: true});
+var fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -142,7 +143,7 @@ io.on("connection", (socket) =>{
                     }
                 }
                 else{
-                    playerscores[i]+=wbet;
+                    playerscores[i]+=tbet;
                 }
                 console.log("sekai des");
             }
@@ -157,12 +158,43 @@ io.on("connection", (socket) =>{
                     }
                 }
                 else{
-                    playerscores[i]+=wbet;
+                    playerscores[i]+=tbet;
                 }
                 console.log("sekai ja nai");
             }
         }
         io.sockets.emit("refreshusers" ,{numplayers,playername,playerscores});
+        var savefile = {};
+        for(let i=0;i<numplayers;i++){
+            savefile[playername[i]]=playerscores[i];
+        }
+        console.log(savefile);
+        var sfstring = JSON.stringify(savefile);
+        var tdate = new Date();
+        tdate = tdate.getTime().toString();
+        tdate+='.json'
+        fs.writeFile('savefiles/'+tdate, sfstring, function(err, result) {
+            if(err) console.log('error', err);
+        });
+    });
+
+    socket.on("loadgame", (game)=>{
+        console.log(game.fname);
+        fs.readFile(game.fname, function(err, data) {
+      
+            // Check for errors
+            if (err) throw err;
+           
+            // Converting to JSON
+            var lfile = JSON.parse(data);
+            // console.log("kaam chalu");
+            for(let i=0;i<numplayers;i++){
+                playerscores[i] = lfile[playername[i]];
+            }
+            io.sockets.emit("refreshusers" ,{numplayers,playername,playerscores});
+            // console.log(users); 
+            // Print users 
+        });
     });
     
 

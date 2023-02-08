@@ -35,6 +35,7 @@ function update_score(){
 function update_players(npl,pnames){
     ent.innerHTML='';
     num_players = npl;
+    minbet = Math.floor(score/20);
     maxbet = Math.floor(score-minbet*(num_players-2));
     for(var i=1;i<=num_players;i++){
         if(pnames[i-1]!=tname){
@@ -66,9 +67,11 @@ const socket = io();
 socket.emit('tname', tname);
 
 socket.on('refreshusers' , (npl) => {
-    update_players(npl.numplayers,npl.playername);
     score = npl.playerscores[playerno-1];
+    update_players(npl.numplayers,npl.playername);
+    
     update_score();
+    // restrictbet();
     console.log(npl);
 });
 
@@ -78,11 +81,23 @@ var timer;
 
 var bsb = document.querySelector("#betsub");
 
+function countdown(tt){
+    sec = tt%60;
+    minu = Math.floor(tt/60);
+    document.querySelector("#Timer").innerHTML = "<h5>Time Remaining : "+minu+":"+sec+"</h5>";
+    if(tt>0){
+        setTimeout(()=>{
+            countdown(tt-1);
+        },1000);
+    }
+}
+
 socket.on('starttimers',(ti)=>{
     // time = ti.time;
     time = ti.ti.time;
     console.log("start");
     bsb.disabled = false;
+    countdown(time/1000);
     timer = setTimeout(()=>{
         senddata();
     },time);

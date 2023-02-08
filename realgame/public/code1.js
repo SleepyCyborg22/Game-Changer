@@ -56,9 +56,21 @@ usb.onclick = function(){
     socket.emit('playerresults',{result});
 };
 
+function countdown(tt){
+    sec = tt%60;
+    minu = Math.floor(tt/60);
+    document.querySelector("#Timer").innerHTML = "<h5>Time Remaining : "+minu+":"+sec+"</h5>";
+    if(tt>0){
+        setTimeout(()=>{
+            countdown(tt-1);
+        },1000);
+    }
+}
+
 const timst = document.querySelector("#timerstart");
 timst.onclick = function(){
     socket.emit("timerstart", {time});
+    countdown(time/1000);
     console.log("sent")
     timst.disabled= true;
     // setTimeout(()=>{
@@ -72,3 +84,18 @@ socket.on("allinprec", ()=>{
     console.log("aa gya tera bhai")
     usb.disabled = false;
 });
+
+const lgb = document.querySelector("#lgbtn");
+const gf = document.querySelector("#formFile");
+
+lgbtn.onclick = function(){
+    var gamefile = gf.files[0];
+    console.log("karrha load tera bhai");
+    console.log(gamefile.name);
+    var fname = 'savefiles/'+gamefile.name
+    // var tdata = require(jj);
+    // import data from jj assert { type: 'JSON' };
+    // console.log(tdata);
+    socket.emit("loadgame",{fname});
+    
+}
